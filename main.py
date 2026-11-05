@@ -2,259 +2,113 @@ import io
 import sys
 from PyQt6 import uic
 from PyQt6.QtWidgets import *
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt
 
-template = """<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1164</width>
-    <height>863</height>
-   </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>500</width>
-    <height>550</height>
-   </size>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>8</pointsize>
-   </font>
-  </property>
-  <property name="windowTitle">
-   <string>WordWise Mini</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">background-color: #F5F3E9</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <property name="styleSheet">
-    <string notr="true"/>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="spacing">
-     <number>12</number>
-    </property>
-    <property name="leftMargin">
-     <number>40</number>
-    </property>
-    <property name="topMargin">
-     <number>50</number>
-    </property>
-    <property name="rightMargin">
-     <number>40</number>
-    </property>
-    <property name="bottomMargin">
-     <number>50</number>
-    </property>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item>
-     <widget class="QLabel" name="title_label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>41</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: #33382B</string>
-      </property>
-      <property name="text">
-       <string>WordWise Mini</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="subtitle_label">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>15</pointsize>
-        <weight>50</weight>
-        <italic>true</italic>
-        <bold>false</bold>
-        <strikeout>false</strikeout>
-        <kerning>true</kerning>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: #33382B</string>
-      </property>
-      <property name="text">
-       <string>Твой маленький помощник в изучении анлийского</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QWidget" name="widget" native="true">
-      <property name="font">
-       <font>
-        <pointsize>6</pointsize>
-       </font>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QPushButton" name="dictionary_pushButton">
-         <property name="minimumSize">
-          <size>
-           <width>380</width>
-           <height>65</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>350</width>
-           <height>65</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>-1</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    background-color: #E5E3D4;
-    color: #33382B;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-QPushButton:hover {
-    background-color: #D8D6C5;
-}</string>
-         </property>
-         <property name="text">
-          <string>Мой словарь</string>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QPushButton" name="start_pushButton">
-         <property name="minimumSize">
-          <size>
-           <width>380</width>
-           <height>65</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>350</width>
-           <height>65</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    background-color: #68734A;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-QPushButton:hover {
-    background-color: #7C895A;
-}</string>
-         </property>
-         <property name="text">
-          <string>Начало теста</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <spacer name="verticalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1164</width>
-     <height>26</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QToolBar" name="toolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
- </widget>
- <resources/>
- <connections/>
-</ui>
-"""
 
 class MyNotes(QMainWindow):
     def __init__(self):
         super().__init__()
-        f = io.StringIO(template)
-        uic.loadUi(f, self)
-        self.start_pushButton.clicked.connect(self.run)
+        self.setWindowTitle('WordWise Mini')
+        self.setMinimumSize(500, 550)
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #F5F3E9;
+            }
+        """)
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
+        layout.setContentsMargins(40, 40, 40, 40)
+        layout.addStretch()
+        title = QLabel('WordWise Mini')
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setStyleSheet("""
+            color: #33382B;
+            font-size: 28px;
+            font-weight: bold;
+        """)
+        subtitle = QLabel('Твой помощник в изучении английского')
+        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setStyleSheet("""
+            color: #777B68;
+            font-size: 13px;
+        """)
+        layout.addWidget(title)
+        layout.addWidget(subtitle)
+        layout.addSpacing(35)
+        self.start_button = QPushButton('Начать тест')
+        self.dictionary_button = QPushButton('Мой словарь')
+        buttons_layout = QVBoxLayout()
+        buttons_layout.setSpacing(12)
+        for button in [self.start_button, self.dictionary_button]:
+            button.setMinimumSize(250, 55)
+            button.setMaximumWidth(350)
+        self.start_button.setStyleSheet("""
+            QPushButton {
+                background-color: #68734A;
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #7C895A;
+            }
+        """)
+        self.dictionary_button.setStyleSheet("""
+            QPushButton {
+                background-color: #E5E3D4;
+                color: #33382B;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #D8D6C5;
+            }
+        """)
+        buttons_layout.addWidget(self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        buttons_layout.addWidget(self.dictionary_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addLayout(buttons_layout)
+        layout.addStretch()
+        self.start_button.clicked.connect(self.open_test)
+        self.dictionary_button.clicked.connect(self.open_dictionary)
 
-    def run(self):
-        return
+    def open_test(self):
+        self.test_window = TestWindow()
+        self.test_window.show()
+
+    def open_dictionary(self):
+            self.test_window = TestWindow()
+            self.test_window.show()
+
+
+class Dictionary(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Мой словарь')
+        self.resize(500, 400)
+        layout = QVBoxLayout()
+        title = QLabel('Мой словарь')
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+        self.setLayout(layout)
+
+
+class TestWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Тест')
+        self.resize(500, 400)
+        layout = QVBoxLayout()
+        title = QLabel('Проверка знаний')
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+        self.setLayout(layout)
+
 
 
 if __name__ == '__main__':
