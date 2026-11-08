@@ -1,7 +1,7 @@
 import sqlite3
 import sys
 import random
-from PyQt6 import uic
+from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import Qt
@@ -11,7 +11,7 @@ class MyNotes(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('WordWise Mini')
-        self.setMinimumSize(500, 550)
+        self.resize(500, 550)
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #F5F3E9;
@@ -76,7 +76,24 @@ class MyNotes(QMainWindow):
         buttons_layout.addWidget(
             self.dictionary_button, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(buttons_layout)
+        print(central_widget.minimumSizeHint())
+        print(layout.minimumSize())
         layout.addStretch()
+        image_layout = QHBoxLayout()
+        image_layout.addStretch()
+        self.image_label = QLabel()
+        self.image_label.setMinimumSize(0, 0)
+        self.image_label.setMaximumSize(110, 110)
+        pixmap = QPixmap('project_foto.jfif')
+        self.image_label.setPixmap(
+            pixmap.scaled(
+                110, 110,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+        )
+        image_layout.addWidget(self.image_label)
+        layout.addLayout(image_layout)
         self.start_button.clicked.connect(self.open_test)
         self.dictionary_button.clicked.connect(self.open_dictionary)
 
@@ -89,12 +106,12 @@ class MyNotes(QMainWindow):
         self.dictionary_window.show()
 
     def closeEvent(self, event):
-        enter = QMessageBox.information(self, 
-                                "Выход", 
-                                "Вы действительно хотите выйти?",
-                                QMessageBox.StandardButton.Yes |
-                                QMessageBox.StandardButton.No
-        )
+        enter = QMessageBox.information(self,
+                                        "Выход",
+                                        "Вы действительно хотите выйти?",
+                                        QMessageBox.StandardButton.Yes |
+                                        QMessageBox.StandardButton.No
+                                        )
         if enter == QMessageBox.StandardButton.Yes:
             event.accept()
         else:
@@ -345,8 +362,8 @@ class TestWindow(QWidget):
             cur.execute("""SELECT DISTINCT english, translation FROM words""")
             self.words = cur.fetchall()
         if not self.words:
-            QMessageBox.information(self, 
-                                    "Нет слов", 
+            QMessageBox.information(self,
+                                    "Нет слов",
                                     "Сначала добавьте слова в словарь!")
             self.close()
             return
@@ -373,7 +390,8 @@ class TestWindow(QWidget):
         if answer == self.current_word[1].strip().lower():
             self.word_label.setText("Правильно!")
         else:
-            self.word_label.setText(f"Неправильно! Правильный ответ: {self.current_word[1]}")
+            self.word_label.setText(
+                f"Неправильно! Правильный ответ: {self.current_word[1]}")
         self.answer_input.setEnabled(False)
         self.check_button.setEnabled(False)
         self.next_button.setEnabled(True)
