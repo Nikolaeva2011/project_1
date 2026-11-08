@@ -76,8 +76,6 @@ class MyNotes(QMainWindow):
         buttons_layout.addWidget(
             self.dictionary_button, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(buttons_layout)
-        print(central_widget.minimumSizeHint())
-        print(layout.minimumSize())
         layout.addStretch()
         image_layout = QHBoxLayout()
         image_layout.addStretch()
