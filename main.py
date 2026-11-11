@@ -259,6 +259,19 @@ class Dictionary(QWidget):
         self.load_words()
 
 
+    def closeEvent(self, event):
+        enter = QMessageBox.information(self,
+                                        "Выход",
+                                        "Вы действительно хотите закрыть окно?",
+                                        QMessageBox.StandardButton.Yes |
+                                        QMessageBox.StandardButton.No
+                                        )
+        if enter == QMessageBox.StandardButton.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
+
 class TestWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -274,7 +287,6 @@ class TestWindow(QWidget):
         self.word_label.setObjectName('wordLabel')
         self.word_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.word_label.setWordWrap(True)
-        # self.word_label.setFixedHeight(80)
         self.answer_input = QLineEdit()
         self.answer_input.setPlaceholderText('Введите перевод')
         self.check_button = QPushButton('Проверить')
@@ -306,10 +318,10 @@ class TestWindow(QWidget):
             QLabel#wordLabel {
                 background-color: white;
                 color: #68734A;
-                font-size: 30px;
+                font-size: 22px;
                 font-weight: bold;
                 border-radius: 15px;
-                padding: 30px;
+                padding: 12px;
             }
 
             QLineEdit {
@@ -373,17 +385,18 @@ class TestWindow(QWidget):
 
     def next_question(self):
         if not self.test_questions_list:
+            self.answer_input.clear()
             self.word_label.setText("Поздравляю! Тест завершен.")
-            self.answer_input.setEnabled(False)
-            self.check_button.setEnabled(False)
-            self.next_button.setEnabled(False)
+            self.answer_input.hide()
+            self.check_button.hide()
+            self.next_button.hide()
             return
         self.current_word = random.choice(self.test_questions_list)
         self.test_questions_list.remove(self.current_word)
         self.word_label.setText(self.current_word[0])
         self.answer_input.clear()
         self.answer_input.setEnabled(True)
-        self.check_button.setEnabled(True)
+        self.check_button.show()
         self.next_button.setEnabled(False)
 
     def check_answer(self):
@@ -393,9 +406,23 @@ class TestWindow(QWidget):
         else:
             self.word_label.setText(
                 f"Неправильно! Правильный ответ: {self.current_word[1]}")
+        self.answer_input.clear()
         self.answer_input.setEnabled(False)
-        self.check_button.setEnabled(False)
+        self.check_button.hide()
         self.next_button.setEnabled(True)
+
+
+    def closeEvent(self, event):
+        enter = QMessageBox.information(self,
+                                        "Выход",
+                                        "Вы действительно хотите закрыть окно?",
+                                        QMessageBox.StandardButton.Yes |
+                                        QMessageBox.StandardButton.No
+                                        )
+        if enter == QMessageBox.StandardButton.Yes:
+            event.accept()
+        else:
+            event.ignore()
 
 
 if __name__ == '__main__':
