@@ -41,14 +41,12 @@ class TestWindow(QWidget):
                 font-family: Segoe UI;
                 font-size: 14px;
             }
-
             QLabel#titleLabel {
                 color: #68734A;
                 font-size: 22px;
                 font-weight: bold;
                 padding: 10px;
             }
-
             QLabel#wordLabel {
                 background-color: white;
                 color: #68734A;
@@ -57,43 +55,35 @@ class TestWindow(QWidget):
                 border-radius: 15px;
                 padding: 12px;
             }
-
             QLineEdit {
                 background-color: white;
                 border: 1px solid #D8D8C8;
                 border-radius: 10px;
                 padding: 11px;
             }
-
             QLineEdit:focus {
                 border: 2px solid #68734A;
             }
-
             QPushButton {
                 border: none;
                 border-radius: 10px;
                 padding: 12px;
                 font-weight: bold;
             }
-
             QPushButton#checkButton {
                 background-color: #68734A;
                 color: white;
             }
-
             QPushButton#checkButton:hover {
                background-color: #7C895A;
             }
-
             QPushButton#nextButton {
                 background-color: #E5E3D4;
                 color: #33382B;
             }
-
             QPushButton#nextButton:hover {
                 background-color: #D8D5C3;
             }
-
             QPushButton:disabled {
                 background-color: #D8D8D0;
                 color: #999999;
@@ -150,7 +140,8 @@ class TestWindow(QWidget):
     def check_answer(self):
         answer = self.answer_input.text().strip().lower()
         self.total_answers += 1
-        if answer == self.current_word[1].strip().lower():
+        self.answer_input.show()
+        if answer == self.current_word[1].strip().lower() and answer != "":
             self.correct_answers += 1
             self.word_label.setText("Правильно!")
         else:
