@@ -20,6 +20,8 @@ class TestWindow(QWidget):
         self.word_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.word_label.setWordWrap(True)
         self.answer_input = QLineEdit()
+        self.correct_answers = 0
+        self.total_answers = 0
         self.answer_input.setPlaceholderText('Введите перевод')
         self.check_button = QPushButton('Проверить')
         self.check_button.setObjectName('checkButton')
@@ -117,6 +119,20 @@ class TestWindow(QWidget):
 
     def next_question(self):
         if not self.test_questions_list:
+            with sqlite3.connect("my_words_database.db") as con:
+                cur = con.cursor()
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS statistics (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        correct_answers INTEGER,
+                        total_answers INTEGER
+                    ) 
+                """)
+                # print("сохраняем", self.correct_answers, self.total_answers)
+                cur.execute(
+                    'INSERT INTO statistics (correct_answers, total_answers) VALUES (?, ?)',
+                    (self.correct_answers, self.total_answers)
+                )
             self.answer_input.clear()
             self.word_label.setText("Поздравляю! Тест завершен.")
             self.answer_input.hide()
@@ -133,15 +149,20 @@ class TestWindow(QWidget):
 
     def check_answer(self):
         answer = self.answer_input.text().strip().lower()
+        self.total_answers += 1
         if answer == self.current_word[1].strip().lower():
+            self.correct_answers += 1
             self.word_label.setText("Правильно!")
         else:
             self.word_label.setText(
-                f"Неправильно! Правильный ответ: {self.current_word[1]}")
+                f"Неправильно! Правильный ответ: {self.current_word[1]}"
+            )
         self.answer_input.clear()
         self.answer_input.setEnabled(False)
         self.check_button.hide()
         self.next_button.setEnabled(True)
+        # print("правильные", self.correct_answers)
+        # print("всего", self.total_answers)
 
     def closeEvent(self, event):
         enter = QMessageBox.information(self,

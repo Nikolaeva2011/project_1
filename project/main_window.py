@@ -4,6 +4,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtCore import Qt
 from test_window import TestWindow
 from dictionary import Dictionary
+from statistics_window import StatisticsWindow
+
 
 class MyNotes(QMainWindow):
     def __init__(self):
@@ -39,9 +41,10 @@ class MyNotes(QMainWindow):
         layout.addSpacing(35)
         self.start_button = QPushButton('Начать тест')
         self.dictionary_button = QPushButton('Мой словарь')
+        self.statistics_button = QPushButton("Статистика")
         buttons_layout = QVBoxLayout()
         buttons_layout.setSpacing(12)
-        for button in [self.start_button, self.dictionary_button]:
+        for button in [self.start_button, self.dictionary_button, self.statistics_button]:
             button.setMinimumSize(250, 55)
             button.setMaximumWidth(350)
         self.start_button.setStyleSheet("""
@@ -70,10 +73,25 @@ class MyNotes(QMainWindow):
                 background-color: #D8D6C5;
             }
         """)
+        self.statistics_button.setStyleSheet("""
+            QPushButton {
+                background-color: #68734A;
+                color: white;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #56613C;
+            }
+        """)
         buttons_layout.addWidget(
             self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
         buttons_layout.addWidget(
             self.dictionary_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        buttons_layout.addWidget(
+                    self.statistics_button, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(buttons_layout)
         layout.addStretch()
         image_layout = QHBoxLayout()
@@ -93,6 +111,7 @@ class MyNotes(QMainWindow):
         layout.addLayout(image_layout)
         self.start_button.clicked.connect(self.open_test)
         self.dictionary_button.clicked.connect(self.open_dictionary)
+        self.statistics_button.clicked.connect(self.open_statistics)
 
     def open_test(self):
         self.test_window = TestWindow()
@@ -101,6 +120,10 @@ class MyNotes(QMainWindow):
     def open_dictionary(self):
         self.dictionary_window = Dictionary()
         self.dictionary_window.show()
+
+    def open_statistics(self):
+        self.statistics_window = StatisticsWindow()
+        self.statistics_window.show()
 
     def closeEvent(self, event):
         enter = QMessageBox.information(self,
