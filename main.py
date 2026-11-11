@@ -12,6 +12,7 @@ class MyNotes(QMainWindow):
         super().__init__()
         self.setWindowTitle('WordWise Mini')
         self.resize(500, 550)
+        self.setFixedSize(500, 550)
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #F5F3E9;
@@ -272,6 +273,8 @@ class TestWindow(QWidget):
         self.word_label = QLabel()
         self.word_label.setObjectName('wordLabel')
         self.word_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.word_label.setWordWrap(True)
+        # self.word_label.setFixedHeight(80)
         self.answer_input = QLineEdit()
         self.answer_input.setPlaceholderText('Введите перевод')
         self.check_button = QPushButton('Проверить')
