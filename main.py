@@ -258,7 +258,6 @@ class Dictionary(QWidget):
                         WHERE english = ? AND translation = ?""", (english, translation))
         self.load_words()
 
-
     def closeEvent(self, event):
         enter = QMessageBox.information(self,
                                         "Выход",
@@ -410,7 +409,6 @@ class TestWindow(QWidget):
         self.answer_input.setEnabled(False)
         self.check_button.hide()
         self.next_button.setEnabled(True)
-
 
     def closeEvent(self, event):
         enter = QMessageBox.information(self,
