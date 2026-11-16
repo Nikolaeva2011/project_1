@@ -12,7 +12,6 @@ class MyNotes(QMainWindow):
         super().__init__()
         self.setWindowTitle('WordWise Mini')
         self.resize(500, 550)
-        self.setFixedSize(500, 550)
         self.setStyleSheet("""
             QMainWindow {
                 background-color: #F5F3E9;

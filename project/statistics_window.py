@@ -7,7 +7,7 @@ class StatisticsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("WordWise Mini — Статистика")
-        self.setFixedSize(430, 400)
+        self.resize(430, 400)
         self.setStyleSheet("""
             QWidget {
                 background-color: #F5F3E9;
