@@ -1,10 +1,12 @@
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QShortcut, QKeySequence
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import Qt
 from test_window import TestWindow
 from dictionary import Dictionary
 from statistics_window import StatisticsWindow
+from settings_window import SettingsWindow
+from theme import apply_theme
 
 
 class MyNotes(QMainWindow):
@@ -38,14 +40,28 @@ class MyNotes(QMainWindow):
         layout.addWidget(title)
         layout.addWidget(subtitle)
         layout.addSpacing(35)
+
         self.start_button = QPushButton('Начать тест')
         self.dictionary_button = QPushButton('Мой словарь')
         self.statistics_button = QPushButton("Статистика")
+        self.settings_button = QPushButton("⚙ Настройки")
+
+        # Горячие клавиши
+        self.test_shortcut = QShortcut(QKeySequence("Ctrl+T"), self)
+        self.test_shortcut.activated.connect(self.open_test)
+        self.dictionary_shortcut = QShortcut(QKeySequence("Ctrl+D"), self)
+        self.dictionary_shortcut.activated.connect(self.open_dictionary)
+        self.statistics_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        self.statistics_shortcut.activated.connect(self.open_statistics)
+        self.settings_shortcut = QShortcut(QKeySequence("Ctrl+N"), self)
+        self.settings_shortcut.activated.connect(self.open_settings)
+
         buttons_layout = QVBoxLayout()
         buttons_layout.setSpacing(12)
-        for button in [self.start_button, self.dictionary_button, self.statistics_button]:
+        for button in [self.start_button, self.dictionary_button, self.statistics_button, self.settings_button]:
             button.setMinimumSize(250, 55)
             button.setMaximumWidth(350)
+
         self.start_button.setStyleSheet("""
             QPushButton {
                 background-color: #68734A;
@@ -85,12 +101,16 @@ class MyNotes(QMainWindow):
                 background-color: #56613C;
             }
         """)
+
         buttons_layout.addWidget(
             self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
         buttons_layout.addWidget(
             self.dictionary_button, alignment=Qt.AlignmentFlag.AlignCenter)
         buttons_layout.addWidget(
-                    self.statistics_button, alignment=Qt.AlignmentFlag.AlignCenter)
+            self.statistics_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        buttons_layout.addWidget(
+            self.settings_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        
         layout.addLayout(buttons_layout)
         layout.addStretch()
         image_layout = QHBoxLayout()
@@ -108,9 +128,60 @@ class MyNotes(QMainWindow):
         )
         image_layout.addWidget(self.image_label)
         layout.addLayout(image_layout)
+
         self.start_button.clicked.connect(self.open_test)
         self.dictionary_button.clicked.connect(self.open_dictionary)
         self.statistics_button.clicked.connect(self.open_statistics)
+        self.settings_button.clicked.connect(self.open_settings)
+
+        self.load_theme()
+        apply_theme(self)
+
+    def load_theme(self):
+        try:
+            with open("settings.txt", "r", encoding="utf-8") as file:
+                theme = file.read().strip()
+        except FileNotFoundError:
+            theme = "Светлая"
+        
+        if theme == "Тёмная":
+            QApplication.instance().setStyleSheet("""
+                QWidget {
+                    background-color: #252820;
+                    color: #F5F3E9;
+                }
+        
+                QPushButton {
+                    background-color: #68734A;
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    padding: 12px;
+                }
+        
+                QPushButton:hover {
+                    background-color: #56613C;
+                }
+            """)
+        elif theme == "Светлая":
+            QApplication.instance().setStyleSheet("""
+                QWidget {
+                    background-color: #F5F3E9;
+                    color: #33382B;
+                }
+        
+                QPushButton {
+                    background-color: #68734A;
+                    color: white;
+                    border: none;
+                    border-radius: 10px;
+                    padding: 12px;
+                }
+        
+                QPushButton:hover {
+                    background-color: #56613C;
+                }
+            """)
 
     def open_test(self):
         self.test_window = TestWindow()
@@ -123,6 +194,12 @@ class MyNotes(QMainWindow):
     def open_statistics(self):
         self.statistics_window = StatisticsWindow()
         self.statistics_window.show()
+
+    def open_settings(self):
+        self.settings_window = SettingsWindow()
+        self.settings_window.exec()
+        self.load_theme()
+        
 
     def closeEvent(self, event):
         enter = QMessageBox.information(self,

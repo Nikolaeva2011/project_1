@@ -1,6 +1,7 @@
 import sqlite3
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
+from theme import apply_theme
 
 class Dictionary(QWidget):
     def __init__(self):
@@ -110,6 +111,7 @@ class Dictionary(QWidget):
         self.add_button.clicked.connect(self.add_word)
         self.delete_button.clicked.connect(self.delete_words)
         self.load_words()
+        apply_theme(self)
 
     def add_word(self):
         english = self.english_input.text()

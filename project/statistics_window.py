@@ -1,6 +1,7 @@
 import sqlite3
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
+from theme import apply_theme
 
 
 class StatisticsWindow(QWidget):
@@ -65,6 +66,7 @@ class StatisticsWindow(QWidget):
         layout.addStretch()
         layout.addWidget(self.close_button)
         self.load_statistics()
+        apply_theme(self)
 
     def load_statistics(self):
         with sqlite3.connect("my_words_database.db") as con:

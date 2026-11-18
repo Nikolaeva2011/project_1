@@ -2,6 +2,7 @@ import sqlite3
 import random
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt
+from theme import apply_theme
 
 
 class TestWindow(QWidget):
@@ -19,18 +20,27 @@ class TestWindow(QWidget):
         self.word_label.setObjectName('wordLabel')
         self.word_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.word_label.setWordWrap(True)
-        self.answer_input = QLineEdit()
+        self.answer_buttons = []
+        self.answer_group = QButtonGroup(self)
+
+        for i in range(4):
+            button = QRadioButton()
+            self.answer_buttons.append(button)
+            self.answer_group.addButton(button)
+
         self.correct_answers = 0
         self.total_answers = 0
-        self.answer_input.setPlaceholderText('Введите перевод')
+
         self.check_button = QPushButton('Проверить')
         self.check_button.setObjectName('checkButton')
         self.next_button = QPushButton('Следующее слово')
         self.next_button.setObjectName('nextButton')
         self.next_button.setEnabled(False)
+
         layout.addWidget(title)
         layout.addWidget(self.word_label, 1)
-        layout.addWidget(self.answer_input)
+        for button in self.answer_buttons:
+            layout.addWidget(button)
         layout.addWidget(self.check_button)
         layout.addWidget(self.next_button)
         self.setLayout(layout)
@@ -54,12 +64,6 @@ class TestWindow(QWidget):
                 font-weight: bold;
                 border-radius: 15px;
                 padding: 12px;
-            }
-            QLineEdit {
-                background-color: white;
-                border: 1px solid #D8D8C8;
-                border-radius: 10px;
-                padding: 11px;
             }
             QLineEdit:focus {
                 border: 2px solid #68734A;
@@ -92,6 +96,7 @@ class TestWindow(QWidget):
         self.check_button.clicked.connect(self.check_answer)
         self.next_button.clicked.connect(self.next_question)
         self.load_question()
+        apply_theme(self)
 
     def load_question(self):
         with sqlite3.connect('my_words_database.db') as con:
@@ -123,37 +128,63 @@ class TestWindow(QWidget):
                     'INSERT INTO statistics (correct_answers, total_answers) VALUES (?, ?)',
                     (self.correct_answers, self.total_answers)
                 )
-            self.answer_input.clear()
+            # self.answer_input.clear()
             self.word_label.setText("Поздравляю! Тест завершен.")
-            self.answer_input.hide()
+            # self.answer_input.hide()
             self.check_button.hide()
             self.next_button.hide()
             return
         self.current_word = random.choice(self.test_questions_list)
         self.test_questions_list.remove(self.current_word)
         self.word_label.setText(self.current_word[0])
-        self.answer_input.clear()
-        self.answer_input.setEnabled(True)
+        correct_answer = self.current_word[1]
+        options = [correct_answer]
+        other_words = [
+            word[1] for word in self.words
+            if word[1] != correct_answer
+        ]
+
+        correct_answer = self.current_word[1]
+        options = [correct_answer]
+        other_words = [
+            word[1] for word in self.words
+            if word[1] != correct_answer
+        ]
+        random.shuffle(other_words)
+        options.extend(other_words[:3])
+        random.shuffle(options)
+        for button, option in zip(self.answer_buttons, options):
+            button.setText(option)
+            button.setChecked(False)
+            button.setEnabled(True)
+            button.show()
+
+        for button in self.answer_buttons[len(options):]:
+            button.hide()
+
+        # self.answer_input.clear()
+        # self.answer_input.setEnabled(True)
         self.check_button.show()
         self.next_button.setEnabled(False)
 
     def check_answer(self):
-        answer = self.answer_input.text().strip().lower()
+        selected_button = self.answer_group.checkedButton()
+        if selected_button is None:
+            QMessageBox.warning(self, "Внимание", "Выберите вариант ответа!")
+            return
+        answer = selected_button.text().strip().lower()
         self.total_answers += 1
-        self.answer_input.show()
-        if answer == self.current_word[1].strip().lower() and answer != "":
+        if answer == self.current_word[1].strip().lower():
             self.correct_answers += 1
             self.word_label.setText("Правильно!")
         else:
             self.word_label.setText(
                 f"Неправильно! Правильный ответ: {self.current_word[1]}"
             )
-        self.answer_input.clear()
-        self.answer_input.setEnabled(False)
+        for button in self.answer_buttons:
+            button.setEnabled(False)
         self.check_button.hide()
         self.next_button.setEnabled(True)
-        # print("правильные", self.correct_answers)
-        # print("всего", self.total_answers)
 
     def closeEvent(self, event):
         enter = QMessageBox.information(self,

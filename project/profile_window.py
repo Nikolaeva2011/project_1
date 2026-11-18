@@ -1,11 +1,10 @@
 import csv
-
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel,
     QComboBox, QPushButton, QMessageBox
 )
 from PyQt6.QtCore import Qt
-
+from theme import apply_theme
 
 class ProfileWindow(QDialog):
     def __init__(self):
@@ -75,6 +74,7 @@ class ProfileWindow(QDialog):
 
         self.gender_combo = QComboBox()
         self.gender_combo.addItems([
+            "Не указывать",
             "Женский",
             "Мужской"
         ])
@@ -89,6 +89,7 @@ class ProfileWindow(QDialog):
         layout.addWidget(self.gender_combo)
         layout.addStretch()
         layout.addWidget(self.save_button)
+        apply_theme(self)
 
     def save_profile(self):
         age = self.age_combo.currentText()
