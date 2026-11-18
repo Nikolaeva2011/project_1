@@ -6,6 +6,7 @@ from test_window import TestWindow
 from dictionary import Dictionary
 from statistics_window import StatisticsWindow
 from settings_window import SettingsWindow
+import shutil
 from theme import apply_theme
 
 
@@ -45,20 +46,11 @@ class MyNotes(QMainWindow):
         self.dictionary_button = QPushButton('Мой словарь')
         self.statistics_button = QPushButton("Статистика")
         self.settings_button = QPushButton("⚙ Настройки")
-
-        # Горячие клавиши
-        self.test_shortcut = QShortcut(QKeySequence("Ctrl+T"), self)
-        self.test_shortcut.activated.connect(self.open_test)
-        self.dictionary_shortcut = QShortcut(QKeySequence("Ctrl+D"), self)
-        self.dictionary_shortcut.activated.connect(self.open_dictionary)
-        self.statistics_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
-        self.statistics_shortcut.activated.connect(self.open_statistics)
-        self.settings_shortcut = QShortcut(QKeySequence("Ctrl+N"), self)
-        self.settings_shortcut.activated.connect(self.open_settings)
+        self.backup_button = QPushButton("Резерная копия")
 
         buttons_layout = QVBoxLayout()
         buttons_layout.setSpacing(12)
-        for button in [self.start_button, self.dictionary_button, self.statistics_button, self.settings_button]:
+        for button in [self.start_button, self.dictionary_button, self.statistics_button, self.settings_button, self.backup_button]:
             button.setMinimumSize(250, 55)
             button.setMaximumWidth(350)
 
@@ -101,6 +93,19 @@ class MyNotes(QMainWindow):
                 background-color: #56613C;
             }
         """)
+        self.backup_button.setStyleSheet("""
+            QPushButton {
+                background-color: #E5E3D4;
+                color: #33382B;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #D8D6C5;
+            }
+        """)
 
         buttons_layout.addWidget(
             self.start_button, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -110,6 +115,8 @@ class MyNotes(QMainWindow):
             self.statistics_button, alignment=Qt.AlignmentFlag.AlignCenter)
         buttons_layout.addWidget(
             self.settings_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        buttons_layout.addWidget(
+                    self.backup_button, alignment=Qt.AlignmentFlag.AlignCenter)
         
         layout.addLayout(buttons_layout)
         layout.addStretch()
@@ -133,6 +140,25 @@ class MyNotes(QMainWindow):
         self.dictionary_button.clicked.connect(self.open_dictionary)
         self.statistics_button.clicked.connect(self.open_statistics)
         self.settings_button.clicked.connect(self.open_settings)
+        self.backup_button.clicked.connect(self.backup_database)
+
+        # Горячие клавиши
+        self.test_shortcut = QShortcut(QKeySequence("Ctrl+T"), self)
+        self.test_shortcut.activated.connect(self.open_test)
+        self.dictionary_shortcut = QShortcut(QKeySequence("Ctrl+D"), self)
+        self.dictionary_shortcut.activated.connect(self.open_dictionary)
+        self.statistics_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        self.statistics_shortcut.activated.connect(self.open_statistics)
+        self.settings_shortcut = QShortcut(QKeySequence("Ctrl+N"), self)
+        self.settings_shortcut.activated.connect(self.open_settings)
+        self.backup_shortcut = QShortcut(QKeySequence("Ctrl+B"), self)
+        self.backup_shortcut.activated.connect(self.open_settings)
+
+        self.start_button.setToolTip("Открыть тест (Ctrl + T)")
+        self.dictionary_button.setToolTip("Открыть словарь (Ctrl + D)")
+        self.statistics_button.setToolTip("Открыть статистику (Ctrl + S)")
+        self.settings_button.setToolTip("Открыть настройки (Ctrl + N)")
+        self.backup_button.setToolTip("Сделать резерную копию (Ctrl + B)")
 
         self.load_theme()
         apply_theme(self)
@@ -199,6 +225,26 @@ class MyNotes(QMainWindow):
         self.settings_window = SettingsWindow()
         self.settings_window.exec()
         self.load_theme()
+
+
+    def backup_database(self):
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Создать резервную копию",
+            "backup.db",
+            "База данных (*.db)"
+        )
+
+        if file_path:
+            try:
+                shutil.copyfile("my_words_database.db", file_path)
+                QMessageBox.information(
+                    self,
+                    "Готово",
+                    "Резервная копия создана!"
+                    )
+            except Exception as error:
+                QMessageBox.warning(self, "Ошибка", str(error))
         
 
     def closeEvent(self, event):

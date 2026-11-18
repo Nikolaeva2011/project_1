@@ -114,5 +114,4 @@ class ProfileWindow(QDialog):
                 self.age_combo.currentText(),
                 self.gender_combo.currentText()
         ])
-
         self.accept()

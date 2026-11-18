@@ -1,7 +1,10 @@
 import sqlite3
 import random
+import csv
+import os
+from datetime import datetime
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from theme import apply_theme
 
 
@@ -17,6 +20,20 @@ class TestWindow(QWidget):
         title.setObjectName('titleLabel')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.word_label = QLabel()
+
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat("%p%")
+
+        self.timer_display = QLCDNumber()
+        self.timer_display.setDigitCount(5)
+        self.timer_display.display("00:00")
+        self.elapsed_seconds = 0
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_timer)
+        self.timer.start(1000)
+        
         self.word_label.setObjectName('wordLabel')
         self.word_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.word_label.setWordWrap(True)
@@ -39,10 +56,13 @@ class TestWindow(QWidget):
 
         layout.addWidget(title)
         layout.addWidget(self.word_label, 1)
+        layout.addWidget(self.progress_bar)
+        layout.addWidget(self.timer_display)
         for button in self.answer_buttons:
             layout.addWidget(button)
         layout.addWidget(self.check_button)
         layout.addWidget(self.next_button)
+
         self.setLayout(layout)
         self.setStyleSheet("""
             QWidget {
@@ -114,6 +134,22 @@ class TestWindow(QWidget):
 
     def next_question(self):
         if not self.test_questions_list:
+            self.timer.stop()
+            with open("statistics.csv", "a", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                if os.path.getsize("statistics.csv") == 0:
+                    writer.writerow([
+                        "Дата",
+                        "Время прохождения",
+                        "Правильные ответы",
+                        "Всего ответов"
+                    ])
+                writer.writerow([
+                    datetime.now().strftime("%d.%m.%Y %H:%M"),
+                    self.elapsed_seconds,
+                    self.correct_answers,
+                    self.total_answers
+                ])
             with sqlite3.connect("my_words_database.db") as con:
                 cur = con.cursor()
                 cur.execute("""
@@ -136,6 +172,7 @@ class TestWindow(QWidget):
             return
         self.current_word = random.choice(self.test_questions_list)
         self.test_questions_list.remove(self.current_word)
+
         self.word_label.setText(self.current_word[0])
         correct_answer = self.current_word[1]
         options = [correct_answer]
@@ -181,10 +218,23 @@ class TestWindow(QWidget):
             self.word_label.setText(
                 f"Неправильно! Правильный ответ: {self.current_word[1]}"
             )
+           
+
         for button in self.answer_buttons:
             button.setEnabled(False)
         self.check_button.hide()
         self.next_button.setEnabled(True)
+        completed = self.total_answers
+        total = len(self.words)
+        self.progress_bar.setValue(int(completed / total * 100))
+
+    def update_timer(self):
+        self.elapsed_seconds += 1
+        minutes = self.elapsed_seconds // 60
+        seconds = self.elapsed_seconds % 60
+        self.timer_display.display(
+            f"{minutes:02d}:{seconds:02d}"
+        )
 
     def closeEvent(self, event):
         enter = QMessageBox.information(self,
